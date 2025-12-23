@@ -25,7 +25,7 @@ export async function addToCart(productId: number | string) {
             data: { userId: user.id }
         })
     }
-    
+
     const existingItem = await prisma.cartItem.findFirst({
         where: {
             cartId: cart.id,
@@ -60,7 +60,7 @@ export async function recordHistory(userId: string, productId: number | string) 
         // Let's just create for now, or check exists.
         // Better: delete old history for this product/user to keep only latest
         const pid = BigInt(productId)
-        
+
         // Use a transaction or just simple calls
         await prisma.browseHistory.deleteMany({
             where: {
@@ -75,29 +75,31 @@ export async function recordHistory(userId: string, productId: number | string) 
                 productId: pid
             }
         })
-        
+
     } catch (e) {
         console.error('Failed to record history', e)
     }
 }
 
 export async function getBrowseHistory() {
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    
-    if (!user) return []
+    try {
+        const supabase = createClient()
+        const { data: { user } } = await supabase.auth.getUser()
 
-    const history = await prisma.browseHistory.findMany({
-        where: { userId: user.id },
-        orderBy: { viewedAt: 'desc' },
-        take: 10,
-        include: {
-            product: true
-        }
-    })
+        if (!user) return []
 
-    // Filter unique products (though we handle it in record, good to be safe)
-    // Actually we handle it in record now.
-    
-    return history.map(h => h.product)
+        const history = await prisma.browseHistory.findMany({
+            where: { userId: user.id },
+            orderBy: { viewedAt: 'desc' },
+            take: 10,
+            include: {
+                product: true
+            }
+        })
+
+        return history.map(h => h.product)
+    } catch (e) {
+        console.error('Failed to get browse history:', e)
+        return []
+    }
 }
