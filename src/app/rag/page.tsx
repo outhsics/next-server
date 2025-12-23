@@ -1,13 +1,21 @@
 'use client'
 
 import { useChat } from '@ai-sdk/react'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { cn } from '@/lib/utils'
 
 export default function ChatPage() {
     const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat()
     const [file, setFile] = useState<File | null>(null)
     const [isUploading, setIsUploading] = useState(false)
+    const scrollRef = useRef<HTMLDivElement>(null)
+
+    // 自动滚动到底部
+    useEffect(() => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+        }
+    }, [messages])
 
     // 处理文件上传
     const handleUpload = async (e: React.FormEvent) => {
@@ -67,7 +75,7 @@ export default function ChatPage() {
                 </div>
 
                 {/* 聊天区域 */}
-                <div className="h-[500px] overflow-y-auto p-6 space-y-4 bg-gray-50">
+                <div className="flex-1 min-h-[400px] max-h-[600px] overflow-y-auto p-6 space-y-4 bg-gray-50 pb-20" ref={scrollRef}>
                     {messages.length === 0 && (
                         <div className="text-center text-gray-400 mt-20">
                             <p>还没有消息，问我关于你上传文档的问题吧！</p>
@@ -84,10 +92,10 @@ export default function ChatPage() {
                         >
                             <div
                                 className={cn(
-                                    "max-w-[80%] rounded-2xl px-4 py-3 text-sm shadow-sm",
+                                    "max-w-[85%] rounded-2xl px-4 py-3 text-sm shadow-sm",
                                     m.role === 'user'
-                                        ? 'bg-blue-600 text-white'
-                                        : 'bg-white text-gray-800 border border-gray-200'
+                                        ? 'bg-blue-600 text-white rounded-tr-none'
+                                        : 'bg-white text-gray-800 border border-gray-200 rounded-tl-none'
                                 )}
                             >
                                 <div className="whitespace-pre-wrap">{m.content}</div>
@@ -97,7 +105,7 @@ export default function ChatPage() {
 
                     {isLoading && (
                         <div className="flex justify-start">
-                            <div className="bg-gray-200 text-gray-500 rounded-2xl px-4 py-2 text-sm animate-pulse">
+                            <div className="bg-white border border-gray-100 text-gray-400 rounded-2xl px-4 py-2 text-sm animate-pulse">
                                 AI 正在思考...
                             </div>
                         </div>

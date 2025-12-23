@@ -1,59 +1,16 @@
-
-import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { headers } from 'next/headers'
 import Link from 'next/link'
 import { SubmitButton } from './SubmitButton'
 import { AnonymousLoginButton } from './AnonymousLoginButton'
+import { signIn, signUp } from './actions'
+
+export const dynamic = 'force-dynamic'
 
 export default function Login({
     searchParams,
 }: {
     searchParams: { message: string }
 }) {
-    const signIn = async (formData: FormData) => {
-        'use server'
-
-        const email = formData.get('email') as string
-        const password = formData.get('password') as string
-        const supabase = createClient()
-
-        const { error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        })
-
-        if (error) {
-            console.error('Sign in error:', error)
-            return redirect('/login?message=' + encodeURIComponent('登录失败: ' + error.message))
-        }
-
-        return redirect('/shop')
-    }
-
-    const signUp = async (formData: FormData) => {
-        'use server'
-
-        const origin = headers().get('origin')
-        const email = formData.get('email') as string
-        const password = formData.get('password') as string
-        const supabase = createClient()
-
-        const { error } = await supabase.auth.signUp({
-            email,
-            password,
-            options: {
-                emailRedirectTo: `${origin}/auth/callback`,
-            },
-        })
-
-        if (error) {
-            console.error('Sign up error:', error)
-            return redirect('/login?message=' + encodeURIComponent('注册失败: ' + error.message))
-        }
-
-        return redirect('/login?message=' + encodeURIComponent('请检查您的邮箱以完成注册'))
-    }
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-background">
