@@ -7,16 +7,14 @@ import AddToCartButton from '../../AddToCartButton'
 import { recordHistory } from '../../actions'
 
 async function getProduct(id: string) {
-    // Try to parse ID as number (BigInt) if using Prisma BigInt ID
-    // schema says: id BigInt
-    try {
-        const product = await prisma.product.findUnique({
-            where: { id: BigInt(id) }
-        })
-        return product
-    } catch (e) {
-        return null
-    }
+    const supabase = createClient()
+    const { data: product } = await supabase
+        .from('products')
+        .select('*')
+        .eq('id', id)
+        .single()
+
+    return product
 }
 
 export default async function ProductPage({ params }: { params: { id: string } }) {

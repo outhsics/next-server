@@ -47,8 +47,8 @@ export default function ChatWidget() {
 
             {/* 聊天窗口 */}
             <div className={cn(
-                "bg-white shadow-2xl rounded-2xl w-[350px] md:w-[400px] overflow-hidden transition-all duration-300 transform origin-bottom-right mb-4 border border-gray-100",
-                isOpen ? "scale-100 opacity-100 h-[500px]" : "scale-0 opacity-0 h-0 pointer-events-none"
+                "bg-white shadow-2xl rounded-2xl w-[350px] md:w-[400px] overflow-hidden transition-all duration-300 transform origin-bottom-right mb-4 border border-gray-100 flex flex-col",
+                isOpen ? "scale-100 opacity-100 h-[550px]" : "scale-0 opacity-0 h-0 pointer-events-none"
             )}>
                 {/* Header */}
                 <div className="bg-gradient-to-r from-purple-600 to-blue-600 p-4 flex justify-between items-center text-white">
@@ -67,7 +67,7 @@ export default function ChatWidget() {
                 </div>
 
                 {/* Message List */}
-                <div className="flex-1 p-4 overflow-y-auto h-[380px] bg-gray-50" ref={scrollRef}>
+                <div className="flex-1 p-4 overflow-y-auto bg-gray-50 pb-10" ref={scrollRef}>
                     {messages.map(m => (
                         <div key={m.id} className={cn("flex mb-4", m.role === 'user' ? "justify-end" : "justify-start")}>
                             <div className={cn(
