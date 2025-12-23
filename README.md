@@ -1,3 +1,7 @@
+# AI Full Stack Demo
+
+🚀 **[点击访问在线预览项目](https://next-server-vert.vercel.app)**
+
 这是一个使用 [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app) 引导的 [Next.js](https://nextjs.org) 项目。
 
 ## 开始使用
