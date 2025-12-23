@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 现有的商品表 (映射到我们在 supabase 里手工建的 products 表)
+model Product {
+  id          BigInt   @id @default(autoincrement())
+  name        String
+  description String?
+  price       Decimal  @db.Decimal(10, 2)
+  image_url   String?
+  category    String?
+  // 我们保留这个字段定义，防止 db push 时删除数据库里的向量数据
+  embedding   Unsupported("vector")? 
+
+  @@map("products") // 映射到数据库里的 "products" 表
+  CartItem CartItem[]
+  OrderItem OrderItem[]
+  BrowseHistory BrowseHistory[]
+}
+
+// 购物车
+model Cart {
+  id        String     @id @default(uuid())
+  userId    String     // 为了简单，我们暂用 cookie 里的临时 ID
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@map("carts")
+}
+
+model CartItem {
+  id        String  @id @default(uuid())
+  cartId    String
+  cart      Cart    @relation(fields: [cartId], references: [id])
+  productId BigInt
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int     @default(1)
+
+  @@map("cart_items")
+}
+
+// 订单
+model Order {
+  id        String      @id @default(uuid())
+  userId    String
+  status    String      @default("PENDING") // PENDING, PAID, SHIPPED
+  total     Decimal     @db.Decimal(10, 2)
+  items     OrderItem[]
+  createdAt DateTime    @default(now())
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id])
+  productId BigInt
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Decimal @db.Decimal(10, 2) // 记录下单时的价格
+
+  @@map("order_items")
+}
+
+model BrowseHistory {
+  id        String   @id @default(uuid())
+  userId    String
+  productId BigInt
+  product   Product  @relation(fields: [productId], references: [id])
+  viewedAt  DateTime @default(now())
+
+  @@map("browse_history")
+}
+
