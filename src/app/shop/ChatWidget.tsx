@@ -2,6 +2,7 @@
 
 import { useChat } from '@ai-sdk/react'
 import { useState, useRef, useEffect } from 'react'
+import Link from 'next/link'
 import { cn } from '@/lib/utils'
 
 export default function ChatWidget() {
@@ -14,7 +15,14 @@ export default function ChatWidget() {
         ],
         onError: (err) => {
             console.error('Chat error:', err)
-            setError(err.message || '连接失败，请稍后重试')
+            console.error('Chat error:', err)
+            // Show more details for debugging
+            try {
+                const details = JSON.parse(err.message)
+                setError(details.error || err.message)
+            } catch {
+                setError(err.message || '连接失败，请稍后重试')
+            }
         },
         onFinish: () => {
             setError(null)
@@ -41,9 +49,9 @@ export default function ChatWidget() {
             if (match) {
                 const [_, name, id] = match
                 return (
-                    <span key={i} className="inline-flex items-center mx-1 bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-sm cursor-pointer hover:bg-purple-200 border border-purple-200" title={`查看商品 ID: ${id}`}>
+                    <Link href={`/shop/product/${id}`} key={i} className="inline-flex items-center mx-1 bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-sm cursor-pointer hover:bg-purple-200 border border-purple-200" title={`查看商品 ID: ${id}`}>
                         🎁 {name}
-                    </span>
+                    </Link>
                 )
             }
             return <span key={i}>{part}</span>

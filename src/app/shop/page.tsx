@@ -61,9 +61,12 @@ export default async function ShopPage({ searchParams }: { searchParams: { categ
                         ))}
                     </nav>
 
-                    <div className="flex items-center">
+                    <div className="flex items-center gap-2">
                         <Link href="/shop/cart" className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors relative" title="查看购物车">
                             <span className="text-xl">🛒</span>
+                        </Link>
+                        <Link href="/login" className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors relative" title="用户登录">
+                            <span className="text-xl">👤</span>
                         </Link>
                     </div>
                 </div>

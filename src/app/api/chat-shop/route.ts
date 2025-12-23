@@ -61,7 +61,7 @@ export async function POST(req: Request) {
         console.log('Chat API: Starting stream')
         // 4. 生成回复
         const result = await streamText({
-            model: google("gemini-1.5-flash"),
+            model: google("gemini-flash-latest"),
             messages: [
                 { role: 'system', content: systemPrompt },
                 ...messages
@@ -71,7 +71,9 @@ export async function POST(req: Request) {
         return result.toTextStreamResponse()
     } catch (error: any) {
         console.error('Chat API Fatal Error:', error)
-        return new Response(JSON.stringify({ error: error.message || 'Failed to process chat request' }), {
+        console.error('Chat API Fatal Error:', error)
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        return new Response(JSON.stringify({ error: `Server Error: ${errorMessage}` }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' }
         })

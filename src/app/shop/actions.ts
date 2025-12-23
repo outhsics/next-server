@@ -15,41 +15,47 @@ export async function addToCart(productId: number | string) {
 
     const pid = BigInt(productId)
 
-    let cart = await prisma.cart.findFirst({
-        where: { userId: user.id },
-        orderBy: { updatedAt: 'desc' }
-    })
-
-    if (!cart) {
-        cart = await prisma.cart.create({
-            data: { userId: user.id }
+    try {
+        let cart = await prisma.cart.findFirst({
+            where: { userId: user.id },
+            orderBy: { updatedAt: 'desc' }
         })
-    }
 
-    const existingItem = await prisma.cartItem.findFirst({
-        where: {
-            cartId: cart.id,
-            productId: pid
+        if (!cart) {
+            cart = await prisma.cart.create({
+                data: { userId: user.id }
+            })
         }
-    })
 
-    if (existingItem) {
-        await prisma.cartItem.update({
-            where: { id: existingItem.id },
-            data: { quantity: existingItem.quantity + 1 }
-        })
-    } else {
-        await prisma.cartItem.create({
-            data: {
+        const existingItem = await prisma.cartItem.findFirst({
+            where: {
                 cartId: cart.id,
-                productId: pid,
-                quantity: 1
+                productId: pid
             }
         })
-    }
 
-    revalidatePath('/shop')
-    revalidatePath('/shop/cart')
+        if (existingItem) {
+            await prisma.cartItem.update({
+                where: { id: existingItem.id },
+                data: { quantity: existingItem.quantity + 1 }
+            })
+        } else {
+            await prisma.cartItem.create({
+                data: {
+                    cartId: cart.id,
+                    productId: pid,
+                    quantity: 1
+                }
+            })
+        }
+
+        revalidatePath('/shop')
+        revalidatePath('/shop/cart')
+    } catch (e) {
+        console.error('Add to Cart Failed:', e)
+        // Check if it's a Prisma constraint error
+        throw new Error('加入购物车失败，请重试')
+    }
 }
 
 export async function recordHistory(userId: string, productId: number | string) {
