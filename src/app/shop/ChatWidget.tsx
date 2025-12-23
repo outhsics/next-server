@@ -6,11 +6,19 @@ import { cn } from '@/lib/utils'
 
 export default function ChatWidget() {
     const [isOpen, setIsOpen] = useState(false)
+    const [error, setError] = useState<string | null>(null)
     const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
         api: '/api/chat-shop',
         initialMessages: [
             { id: 'Welcome', role: 'assistant', content: '您好！我是慧慧，这里的金牌导购。想买点什么？比如“推荐个跑步鞋”或者“有啥便宜的耳机”？' }
-        ]
+        ],
+        onError: (err) => {
+            console.error('Chat error:', err)
+            setError(err.message || '连接失败，请稍后重试')
+        },
+        onFinish: () => {
+            setError(null)
+        }
     })
 
     const scrollRef = useRef<HTMLDivElement>(null)
@@ -84,6 +92,13 @@ export default function ChatWidget() {
                         <div className="flex justify-start mb-4">
                             <div className="bg-white px-4 py-3 rounded-2xl rounded-bl-none shadow-sm border border-gray-100">
                                 <span className="animate-pulse text-gray-400 text-xs">慧慧正在思考...</span>
+                            </div>
+                        </div>
+                    )}
+                    {error && (
+                        <div className="flex justify-start mb-4">
+                            <div className="bg-red-50 px-4 py-3 rounded-2xl text-red-600 text-xs border border-red-200">
+                                ⚠️ {error}
                             </div>
                         </div>
                     )}
