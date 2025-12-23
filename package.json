@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint"
   },
@@ -12,6 +12,7 @@
     "@ai-sdk/google": "^1.0.0",
     "@ai-sdk/openai": "^1.0.0",
     "@ai-sdk/react": "^1.0.0",
+    "@prisma/client": "^5.10.2",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.87.3",
     "ai": "^4.0.0",
@@ -23,7 +24,6 @@
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
-    "@prisma/client": "^5.10.2",
     "@types/node": "^18",
     "@types/pdf-parse": "^1.1.5",
     "@types/react": "^18",
